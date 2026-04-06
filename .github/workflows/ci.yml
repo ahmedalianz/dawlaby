@@ -33,7 +33,7 @@ jobs:
 
       # 5. Lint
       - name: Lint
-        run: npx eslint . --ext .ts,.tsx --max-warnings 0
+        run: npx expo lint
 
       # 6. تأكد إن الـ Expo config صح
       - name: Expo config check

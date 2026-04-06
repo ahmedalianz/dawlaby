@@ -8,7 +8,6 @@ import { router } from "expo-router";
 import React from "react";
 import { useTranslation } from "react-i18next";
 import { StyleSheet, TouchableOpacity, View } from "react-native";
-import { useSafeAreaInsets } from "react-native-safe-area-context";
 
 const TopBar = ({
   firstButtonIcon,
@@ -19,7 +18,6 @@ const TopBar = ({
   title,
 }: TopBarProps) => {
   const { t } = useTranslation();
-  const insets = useSafeAreaInsets();
 
   return (
     <BlurView

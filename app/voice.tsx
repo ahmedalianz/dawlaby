@@ -19,7 +19,7 @@ import { Dimensions, StyleSheet, TouchableOpacity, View } from "react-native";
 import Animated from "react-native-reanimated";
 import { Colors } from "../constants/colors";
 
-const { width, height } = Dimensions.get("window");
+const { width } = Dimensions.get("window");
 
 function VoiceScreen() {
   const { t, i18n } = useTranslation();
