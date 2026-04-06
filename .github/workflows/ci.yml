@@ -8,7 +8,7 @@ on:
 
 jobs:
   check:
-    name: TypeScript + Lint
+    name: TypeScript + Lint + Tests
     runs-on: ubuntu-latest
 
     steps:
