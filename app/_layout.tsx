@@ -1,24 +1,92 @@
-import { DarkTheme, DefaultTheme, ThemeProvider } from '@react-navigation/native';
-import { Stack } from 'expo-router';
-import { StatusBar } from 'expo-status-bar';
-import 'react-native-reanimated';
+import { ErrorBoundary } from "@/components/common/ErrorBoundary";
+import { Colors } from "@/constants/colors";
+import { useSyncDirectionWithLang } from "@/hooks/useSyncDirectionWithLang";
+import { DirectionProvider } from "@/store/DirectionContext";
+import { initI18n } from "@/utils/i18n";
+import {
+  Tajawal_400Regular,
+  Tajawal_500Medium,
+  Tajawal_700Bold,
+  Tajawal_800ExtraBold,
+} from "@expo-google-fonts/tajawal";
 
-import { useColorScheme } from '@/hooks/use-color-scheme';
+import { useFonts } from "expo-font";
+import { Stack } from "expo-router";
+import { useEffect, useState } from "react";
+import { StatusBar, View } from "react-native";
+export default function Layout() {
+  const [ready, setReady] = useState(false);
 
-export const unstable_settings = {
-  anchor: '(tabs)',
-};
+  useFonts({
+    Tajawal_400Regular,
+    Tajawal_500Medium,
+    Tajawal_700Bold,
+    Tajawal_800ExtraBold,
+  });
 
-export default function RootLayout() {
-  const colorScheme = useColorScheme();
+  useEffect(() => {
+    initI18n().then(() => setReady(true));
+  }, []);
+
+  if (!ready) return null;
 
   return (
-    <ThemeProvider value={colorScheme === 'dark' ? DarkTheme : DefaultTheme}>
-      <Stack>
-        <Stack.Screen name="(tabs)" options={{ headerShown: false }} />
-        <Stack.Screen name="modal" options={{ presentation: 'modal', title: 'Modal' }} />
-      </Stack>
-      <StatusBar style="auto" />
-    </ThemeProvider>
+    <DirectionProvider>
+      <AppContent />
+    </DirectionProvider>
+  );
+}
+function AppContent() {
+  useSyncDirectionWithLang();
+
+  return (
+    <ErrorBoundary
+      showHomeButton
+      onError={(error) => {
+        console.error("Root error:", error.message);
+      }}
+      errorType="render"
+    >
+      <View style={{ flex: 1, backgroundColor: Colors.surface }}>
+        <StatusBar barStyle="light-content" />
+
+        <Stack
+          screenOptions={{
+            headerShown: false,
+            animation: "fade_from_bottom",
+            contentStyle: { backgroundColor: Colors.surface },
+          }}
+        >
+          <Stack.Screen name="index" />
+          <Stack.Screen name="home" />
+          <Stack.Screen name="onboarding" options={{ animation: "fade" }} />
+          <Stack.Screen name="camera" options={{ animation: "fade" }} />
+          <Stack.Screen
+            name="suggestions"
+            options={{ animation: "slide_from_bottom" }}
+          />
+          <Stack.Screen
+            name="voice"
+            options={{ animation: "slide_from_bottom" }}
+          />
+          <Stack.Screen
+            name="history/index"
+            options={{ animation: "slide_from_right" }}
+          />
+          <Stack.Screen
+            name="history/[id]"
+            options={{ animation: "slide_from_right" }}
+          />
+          <Stack.Screen
+            name="profile"
+            options={{ animation: "slide_from_right" }}
+          />
+          <Stack.Screen
+            name="upload"
+            options={{ animation: "slide_from_right" }}
+          />
+        </Stack>
+      </View>
+    </ErrorBoundary>
   );
 }

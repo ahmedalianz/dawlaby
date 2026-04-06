@@ -1,0 +1,79 @@
+import AsyncStorage from "@react-native-async-storage/async-storage";
+import * as Localization from "expo-localization";
+import i18next, { InitOptions } from "i18next";
+import { initReactI18next } from "react-i18next";
+import { I18nManager } from "react-native";
+
+import ar from "../locales/ar.json";
+import en from "../locales/en.json";
+
+const ASYNC_STORAGE_LANG_KEY = "app_language";
+
+const SUPPORTED_LANGS = ["en", "ar"];
+
+const resources = {
+  en: { translation: en },
+  ar: { translation: ar },
+};
+
+const getDeviceLang = () => {
+  const code = Localization.getLocales()[0]?.languageCode;
+  return SUPPORTED_LANGS.includes(code || "") ? code : "en";
+};
+
+export const initI18n = async () => {
+  let savedLang = getDeviceLang();
+
+  try {
+    const lang = await AsyncStorage.getItem(ASYNC_STORAGE_LANG_KEY);
+    if (lang && SUPPORTED_LANGS.includes(lang)) {
+      savedLang = lang;
+    }
+  } catch (error) {
+    console.warn("Error reading language", error);
+  }
+
+  const isRTL = savedLang === "ar";
+
+  if (I18nManager.isRTL !== isRTL) {
+    I18nManager.allowRTL(isRTL);
+    I18nManager.forceRTL(isRTL);
+  }
+  const options: InitOptions = {
+    resources,
+    lng: savedLang as string,
+    fallbackLng: "en",
+    compatibilityJSON: "v4",
+    returnNull: false,
+    interpolation: {
+      escapeValue: false,
+    },
+  };
+  await i18next.use(initReactI18next).init(options);
+
+  return i18next;
+};
+
+export const changeLanguage = async (lang: string) => {
+  if (!SUPPORTED_LANGS.includes(lang)) return false;
+
+  try {
+    await AsyncStorage.setItem(ASYNC_STORAGE_LANG_KEY, lang);
+    await i18next.changeLanguage(lang);
+
+    const isRTL = lang === "ar";
+
+    if (I18nManager.isRTL !== isRTL) {
+      I18nManager.allowRTL(isRTL);
+      I18nManager.forceRTL(isRTL);
+      return true; // trigger reload
+    }
+
+    return false;
+  } catch (e) {
+    console.error("Failed to change language", e);
+    return false;
+  }
+};
+
+export default i18next;

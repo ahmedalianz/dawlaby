@@ -48,3 +48,37 @@ Join our community of developers creating universal apps.
 
 - [Expo on GitHub](https://github.com/expo/expo): View our open source platform and contribute.
 - [Discord community](https://chat.expo.dev): Chat with Expo users and ask questions.
+
+  لو عاوز تستخدم Claude Haiku بدل Gemini:
+
+  const response = await fetch('https://api.anthropic.com/v1/messages', {
+  method: 'POST',
+  headers: {
+  'Content-Type': 'application/json',
+  'x-api-key': 'YOUR_CLAUDE_API_KEY',
+  'anthropic-version': '2023-06-01',
+  },
+  body: JSON.stringify({
+  model: 'claude-haiku-20240307',
+  max_tokens: 1024,
+  messages: [{
+  role: 'user',
+  content: [
+  { type: 'text', text: prompt },
+  {
+  type: 'image',
+  source: {
+  type: 'base64',
+  media_type: 'image/jpeg',
+  data: base64Image,
+  },
+  },
+  ],
+  }],
+  }),
+  });
+  const data = await response.json();
+  const raw = data.content[0].text;
+  const jsonMatch = raw.match(/\{[\s\S]\*\}/);
+  return JSON.parse(jsonMatch[0]);
+  ─────────────────────────────────────────
