@@ -1,0 +1,76 @@
+name: Deploy
+
+# بيشتغل بس لما يتعمل merge على main
+on:
+  push:
+    branches: ["main"]
+
+jobs:
+  # ─────────────────────────────────────────
+  # Preview Build — بيبعت للـ testers
+  # ─────────────────────────────────────────
+  preview:
+    name: Preview Build
+    runs-on: ubuntu-latest
+    environment: preview
+
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v4
+
+      - name: Setup Node
+        uses: actions/setup-node@v4
+        with:
+          node-version: 20
+          cache: "npm"
+
+      - name: Install dependencies
+        run: npm ci
+
+      - name: Setup EAS
+        uses: expo/expo-github-action@v8
+        with:
+          eas-version: latest
+          token: ${{ secrets.EXPO_TOKEN }}
+
+      # بيعمل APK للـ Android وـ IPA للـ iOS
+      - name: Build Preview
+        run: eas build --profile preview --platform android --non-interactive
+
+  # ─────────────────────────────────────────
+  # Production Build — للـ stores
+  # بس لما تعمل tag زي v1.0.0
+  # # ─────────────────────────────────────────
+  # production:
+  #   name: Production Build & Submit
+  #   runs-on: ubuntu-latest
+  #   environment: production
+  #   # بيشتغل بس لو الـ commit message فيه [release]
+  #   if: contains(github.event.head_commit.message, '[release]')
+
+  #   steps:
+  #     - name: Checkout
+  #       uses: actions/checkout@v4
+
+  #     - name: Setup Node
+  #       uses: actions/setup-node@v4
+  #       with:
+  #         node-version: 20
+  #         cache: "npm"
+
+  #     - name: Install dependencies
+  #       run: npm ci
+
+  #     - name: Setup EAS
+  #       uses: expo/expo-github-action@v8
+  #       with:
+  #         eas-version: latest
+  #         token: ${{ secrets.EXPO_TOKEN }}
+
+  #     # Build للـ production
+  #     - name: Build Production
+  #       run: eas build --profile production --platform all --non-interactive
+
+  #     # رفع على TestFlight + Play Store تلقائياً
+  #     - name: Submit to Stores
+  #       run: eas submit --profile production --platform all --non-interactive

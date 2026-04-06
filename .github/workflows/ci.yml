@@ -1,0 +1,44 @@
+name: CI
+
+on:
+  push:
+    branches: ["*"]
+  pull_request:
+    branches: ["*"]
+
+jobs:
+  check:
+    name: TypeScript + Lint
+    runs-on: ubuntu-latest
+
+    steps:
+      # 1. نسخ الكود
+      - name: Checkout
+        uses: actions/checkout@v4
+
+      # 2. تثبيت Node
+      - name: Setup Node
+        uses: actions/setup-node@v4
+        with:
+          node-version: 20
+          cache: "npm"
+
+      # 3. تثبيت الـ packages
+      - name: Install dependencies
+        run: npm ci
+
+      # 4. TypeScript check
+      - name: TypeScript
+        run: npx tsc --noEmit
+
+      # 5. Lint
+      - name: Lint
+        run: npx eslint . --ext .ts,.tsx --max-warnings 0
+
+      # 6. تأكد إن الـ Expo config صح
+      - name: Expo config check
+        run: npx expo config --type introspect
+
+      # 7. Run Tests
+      - name: Run Tests
+        run: npm test -- --ci --coverage --watchAll=false
