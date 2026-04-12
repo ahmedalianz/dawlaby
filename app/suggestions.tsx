@@ -59,7 +59,7 @@ export default function SuggestionScreen() {
     fetchSuggestion();
   }, [fetchSuggestion]);
   useEffect(() => {
-    // init();
+    init();
   }, [init]);
 
   // ── Handlers ──
@@ -152,7 +152,11 @@ export default function SuggestionScreen() {
               color={Colors.primary}
             />
             <AppText style={styles.errorText}>{error}</AppText>
-            <TouchableOpacity style={styles.retryBtn} onPress={handleRetry}>
+            <TouchableOpacity
+              style={styles.retryBtn}
+              onPress={handleRetry}
+              testID="retryBtn"
+            >
               <AppText style={styles.retryBtnText}>
                 {t("suggestions.tryAgain")}
               </AppText>

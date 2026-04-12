@@ -127,6 +127,7 @@ function VoiceScreen() {
               onPress={isRecording ? stopRecording : startRecording}
               disabled={isProcessing || hasResult}
               activeOpacity={0.85}
+              testID="mic-button"
             >
               <LinearGradient
                 colors={
@@ -263,7 +264,11 @@ function VoiceScreen() {
               ))}
             </View>
 
-            <TouchableOpacity style={styles.askAgainBtn} onPress={resetScreen}>
+            <TouchableOpacity
+              style={styles.askAgainBtn}
+              onPress={resetScreen}
+              testID="refresh-button"
+            >
               <Ionicons name="mic-outline" size={18} color={Colors.primary} />
               <AppText style={styles.askAgainText}>
                 {t("voice.askAnother")}

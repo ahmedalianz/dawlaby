@@ -1,6 +1,6 @@
+import { ErrorType } from "@/components/common/ErrorScreen";
+import { ErrorLogger, ErrorSeverity } from "@/utils/errorLogger";
 import { useCallback, useState } from "react";
-import { ErrorType } from "../components/common/ErrorScreen";
-import { ErrorLogger, ErrorSeverity } from "../utils/errorLogger";
 
 // ─────────────────────────────────────────
 // Types

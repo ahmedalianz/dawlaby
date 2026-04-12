@@ -39,6 +39,14 @@ jobs:
       - name: Expo config check
         run: npx expo config --type introspect
 
-      # 7. Run Tests
+      # 7. Run Tests + Coverage
       - name: Run Tests
         run: npm test -- --ci --coverage --watchAll=false
+
+      # Optional: Comment coverage report on PR
+      - name: Jest Coverage Report
+        uses: ArtiomTr/jest-coverage-report-action@v2
+        if: github.event_name == 'pull_request'
+        with:
+          github-token: ${{ secrets.GITHUB_TOKEN }}
+          # threshold: 60   # optional extra check (but Jest config already does it)

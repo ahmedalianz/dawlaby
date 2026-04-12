@@ -15,6 +15,16 @@ module.exports = {
   ],
 
   testEnvironment: "node",
-
+  collectCoverage: false,
+  coverageDirectory: "coverage",
+  coverageReporters: ["text", "lcov", "json-summary"],
   collectCoverageFrom: ["utils/**/*.ts", "hooks/**/*.ts", "!**/*.d.ts"],
+  coverageThreshold: {
+    global: {
+      lines: 60,
+      branches: 50,
+      functions: 60,
+      statements: 60,
+    },
+  },
 };

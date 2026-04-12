@@ -16,6 +16,15 @@ jest.mock("expo-router", () => ({
   useFocusEffect: jest.fn(),
 }));
 
+jest.mock("react-native-safe-area-context", () => {
+  const inset = { top: 0, right: 0, bottom: 0, left: 0 };
+  return {
+    SafeAreaProvider: ({ children }: { children: React.ReactNode }) => children,
+    SafeAreaView: ({ children }: { children: React.ReactNode }) => children,
+    useSafeAreaInsets: () => inset,
+    useSafeAreaFrame: () => ({ x: 0, y: 0, width: 390, height: 844 }),
+  };
+});
 // ── Mock expo-file-system ──
 jest.mock("expo-file-system", () => ({
   File: jest.fn().mockImplementation(() => ({
@@ -29,21 +38,24 @@ jest.mock("expo-constants", () => ({
 }));
 
 // ── Mock expo-audio ──
-jest.mock("expo-audio", () => ({
-  useAudioRecorder: jest.fn(() => ({
-    record: jest.fn(),
-    stop: jest.fn().mockResolvedValue(null),
-    prepareToRecordAsync: jest.fn(),
+jest.mock("expo-audio", () => {
+  const mockAudioRecorder = {
     isRecording: false,
-    uri: null,
-  })),
-  AudioModule: {
-    requestRecordingPermissionsAsync: jest.fn().mockResolvedValue({
-      granted: true,
-    }),
-  },
-  RecordingPresets: { HIGH_QUALITY: {} },
-}));
+    prepareToRecordAsync: jest.fn(),
+    record: jest.fn(),
+    stop: jest.fn(),
+    uri: "file://mock/audio.m4a",
+  };
+  return {
+    AudioModule: {
+      requestRecordingPermissionsAsync: jest
+        .fn()
+        .mockResolvedValue({ granted: true }),
+    },
+    useAudioRecorder: jest.fn(() => mockAudioRecorder),
+    RecordingPresets: { HIGH_QUALITY: "HQ" },
+  };
+});
 
 // ── Mock expo-camera ──
 jest.mock("expo-camera", () => ({
@@ -57,12 +69,78 @@ jest.mock("expo-image-picker", () => ({
   MediaTypeOptions: { Images: "Images" },
 }));
 
-// ── Mock react-native-reanimated ──
-jest.mock("react-native-reanimated", () => {
-  const Reanimated = require("react-native-reanimated/mock");
-  Reanimated.default.call = () => {};
-  return Reanimated;
+jest.mock("react-native/Libraries/Share/Share", () => ({
+  share: jest.fn().mockResolvedValue({ action: "sharedAction" }),
+}));
+
+const mockSaveAsync = jest.fn().mockResolvedValue({
+  uri: "file://mock/compressed/image.jpg",
+  base64: "mockbase64",
 });
+const mockRenderAsync = jest
+  .fn()
+  .mockResolvedValue({ saveAsync: mockSaveAsync });
+const mockResize = jest.fn();
+jest.mock("expo-image-manipulator", () => ({
+  ImageManipulator: {
+    manipulate: jest.fn(() => ({
+      resize: mockResize,
+      renderAsync: mockRenderAsync,
+    })),
+  },
+  SaveFormat: {
+    JPEG: "jpeg",
+  },
+}));
+
+// ── Mock Reanimated ──
+jest.mock("react-native-reanimated", () => ({
+  default: {
+    createAnimatedComponent: (component: any) => component,
+    call: () => {},
+  },
+  useSharedValue: (val: any) => ({ value: val }),
+  useAnimatedStyle: (cb: any) => {
+    try {
+      return cb();
+    } catch {
+      return {};
+    }
+  },
+  useAnimatedScrollHandler: () => ({}),
+  withTiming: (toValue: any, _config?: any, callback?: any) => {
+    callback?.(true);
+    return toValue;
+  },
+  withSpring: (toValue: any, _config?: any, callback?: any) => {
+    callback?.(true);
+    return toValue;
+  },
+  withRepeat: (toValue: any) => toValue,
+  withSequence: (...args: any[]) => {
+    // Execute last callback if exists
+    const last = args[args.length - 1];
+    return last;
+  },
+  withDelay: (_delay: any, toValue: any) => toValue,
+  cancelAnimation: () => {},
+  runOnJS: (fn: any) => fn,
+  runOnUI: (fn: any) => fn,
+  Easing: {
+    out: () => {},
+    in: () => {},
+    inOut: () => {},
+    exp: () => {},
+    back: () => () => {},
+    ease: () => {},
+  },
+  // ✅ Animated components
+  View: "View",
+  Text: "Text",
+  ScrollView: "ScrollView",
+  FlatList: "FlatList",
+  Image: "Image",
+}));
 
 // ── Mock expo-blur ──
 jest.mock("expo-blur", () => ({
@@ -94,3 +172,29 @@ jest.mock("i18next", () => ({
 }));
 // ── Mock fetch globally ──
 global.fetch = jest.fn();
+
+// Mock your common UI components to be "transparent" to tests
+jest.mock(
+  "@/components/common/Screen",
+  () =>
+    ({ children }: { children: React.ReactNode }) =>
+      children,
+);
+jest.mock(
+  "@/components/common/BottomView",
+  () =>
+    ({ children }: { children: React.ReactNode }) =>
+      children,
+);
+jest.mock(
+  "@/components/common/AppScrollView",
+  () =>
+    ({ children }: { children: React.ReactNode }) =>
+      children,
+);
+
+// Mock Ionicons
+jest.mock("@expo/vector-icons", () => ({
+  Ionicons: "Ionicons",
+  MaterialIcons: "MaterialIcons",
+}));

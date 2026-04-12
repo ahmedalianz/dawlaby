@@ -19,7 +19,7 @@ import { useTranslation } from "react-i18next";
 import { Image, StyleSheet, TouchableOpacity, View } from "react-native";
 import { Colors } from "../constants/colors";
 
-export default function App() {
+export default function Home() {
   const { t } = useTranslation();
   const [profile, setProfile] = useState<UserProfile>(DEFAULT_PROFILE);
   const [recentLooks, setRecentLooks] = useState<HistoryItem[]>([]);

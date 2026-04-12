@@ -1,8 +1,8 @@
+import { changeLanguage, initI18n } from "@/utils/i18n";
 import AsyncStorage from "@react-native-async-storage/async-storage";
 import * as Localization from "expo-localization";
 import i18next from "i18next";
 import { I18nManager } from "react-native";
-import { changeLanguage, initI18n } from "../i18n";
 
 // 1. Better Mock for I18nManager
 jest.mock("react-native", () => {
