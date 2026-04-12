@@ -34,7 +34,9 @@ export const ErrorLogger = {
     error: unknown,
     context?: Record<string, unknown>,
     severity: ErrorSeverity = "medium",
+    forceDev = __DEV__,
   ) => {
+    const isDevMode = forceDev ?? __DEV__;
     const formatted = formatError(error, context, severity);
 
     // 👇 Replace with Sentry:
@@ -46,7 +48,7 @@ export const ErrorLogger = {
     // 👇 Replace with Datadog:
     // DdLogs.error(formatted.message, formatted);
 
-    if (__DEV__) {
+    if (isDevMode) {
       console.group(`🔴 [${severity.toUpperCase()}] ${formatted.timestamp}`);
       console.error("Message:", formatted.message);
       if (formatted.stack) console.error("Stack:", formatted.stack);
