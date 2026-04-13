@@ -35,7 +35,7 @@ const HistoryContent = ({
     return (
       <View style={styles.loadingState}>
         {[1, 2, 3, 4].map((i) => (
-          <View key={i} style={styles.skeleton} />
+          <View testID="skeleton" key={i} style={styles.skeleton} />
         ))}
       </View>
     );

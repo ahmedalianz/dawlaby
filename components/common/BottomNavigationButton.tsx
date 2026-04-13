@@ -20,6 +20,7 @@ const BottomNavigationButton = ({
   const { t } = useTranslation();
   return (
     <TouchableOpacity
+      testID="bottom-nav-button"
       style={active ? styles.navItemActive : styles.navItem}
       onPress={() => router.push(pathName)}
     >

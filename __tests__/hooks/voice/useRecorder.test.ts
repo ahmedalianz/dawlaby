@@ -3,12 +3,6 @@ import { act, renderHook } from "@testing-library/react-native";
 import { AudioModule } from "expo-audio";
 import { File } from "expo-file-system";
 
-jest.mock("expo-file-system", () => ({
-  File: jest.fn().mockImplementation(() => ({
-    base64: jest.fn().mockResolvedValue("mockBase64Audio"),
-  })),
-}));
-
 describe("useRecorder", () => {
   beforeEach(() => {
     jest.clearAllMocks();
@@ -60,6 +54,6 @@ describe("useRecorder", () => {
 
     expect(onTranscribeStart).toHaveBeenCalled();
     expect(File).toHaveBeenCalledWith("file://mock/audio.m4a");
-    expect(onBase64Ready).toHaveBeenCalledWith("mockBase64Audio");
+    expect(onBase64Ready).toHaveBeenCalledWith("mockbase64string");
   });
 });

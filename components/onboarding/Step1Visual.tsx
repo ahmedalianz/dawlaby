@@ -9,13 +9,14 @@ function Step1Visual() {
   return (
     <View style={step1Styles.container}>
       {/* Ambient glow */}
-      <View style={step1Styles.glow} />
+      <View style={step1Styles.glow} testID="glow" />
 
       {/* Gold ring */}
       <View style={step1Styles.ring}>
         <View style={step1Styles.ringInner}>
           <Image
-            source={require("../../assets/images/onboarding/step1.webp")}
+            testID="step1-image"
+            source={require("@/assets/images/onboarding/step1.webp")}
             placeholder={{ blurhash: BLUR_HASH }}
             style={step1Styles.image}
             contentFit="cover"
@@ -26,9 +27,11 @@ function Step1Visual() {
 
       {/* Floating accents */}
       <View
+        testID="floating-accent1"
         style={[step1Styles.dot, { top: 20, right: 20, width: 12, height: 12 }]}
       />
       <View
+        testID="floating-accent2"
         style={[
           step1Styles.dot,
           { bottom: 60, left: 10, width: 6, height: 6, opacity: 0.6 },

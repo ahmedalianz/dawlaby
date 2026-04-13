@@ -1,14 +1,15 @@
 import AppText from "@/components/common/AppText";
 import { Colors } from "@/constants/colors";
+import { useDirection } from "@/store/DirectionContext";
 import { OnboardingStep } from "@/types";
 import { useTranslation } from "react-i18next";
-import { Dimensions, I18nManager, StyleSheet, View } from "react-native";
+import { Dimensions, StyleSheet, View } from "react-native";
 
 const { width } = Dimensions.get("window");
-const isRTL = I18nManager.isRTL;
 
 function SlideHeadline({ item }: Readonly<{ item: OnboardingStep }>) {
   const { t } = useTranslation();
+  const { isRTL } = useDirection();
 
   if (item.id === "3") {
     // Step 3: "Instant Looks," then "Endless Inspiration"
@@ -37,7 +38,9 @@ function SlideHeadline({ item }: Readonly<{ item: OnboardingStep }>) {
 
   // Step 1: "Your Personal Stylist is Here"
   return (
-    <AppText style={slideStyles.headline}>
+    <AppText
+      style={[slideStyles.headline, { textAlign: isRTL ? "right" : "center" }]}
+    >
       {t("onboarding.title1")}
       {"\n"}
       <AppText style={slideStyles.headlineGold}>
@@ -50,6 +53,7 @@ function SlideHeadline({ item }: Readonly<{ item: OnboardingStep }>) {
 const SlideItem: React.FC<Readonly<{ item: OnboardingStep }>> = ({ item }) => {
   const { t } = useTranslation();
   const Visual = item.visual;
+  const { isRTL } = useDirection();
 
   return (
     <View style={[slideStyles.container, { width }]}>
@@ -61,7 +65,12 @@ const SlideItem: React.FC<Readonly<{ item: OnboardingStep }>> = ({ item }) => {
       {/* Text */}
       <View style={slideStyles.textWrapper}>
         <SlideHeadline item={item} />
-        <AppText style={slideStyles.subtitle}>
+        <AppText
+          style={[
+            slideStyles.subtitle,
+            { textAlign: isRTL ? "right" : "center" },
+          ]}
+        >
           {t(`onboarding.desc${item.id}`)}
         </AppText>
       </View>
@@ -91,7 +100,6 @@ const slideStyles = StyleSheet.create({
     fontSize: 38,
     fontWeight: "800",
     color: Colors.onSurface,
-    textAlign: isRTL ? "right" : "center",
     lineHeight: 46,
     letterSpacing: -0.5,
   },
@@ -106,7 +114,6 @@ const slideStyles = StyleSheet.create({
     fontSize: 15,
     fontWeight: "300",
     color: Colors.secondary,
-    textAlign: isRTL ? "right" : "center",
     lineHeight: 24,
     opacity: 0.85,
     paddingHorizontal: 8,

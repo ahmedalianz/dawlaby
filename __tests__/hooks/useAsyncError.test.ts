@@ -50,4 +50,58 @@ describe("useAsyncError", () => {
     expect(result.current.error).toBeNull();
     expect(result.current.errorType).toBe("unknown");
   });
+  it("categorizes 401 and 403 as auth errors", async () => {
+    const { result } = renderHook(() => useAsyncError());
+
+    await act(async () => {
+      await result.current.execute(async () => {
+        throw new Error("Unauthorized (401)");
+      });
+    });
+    expect(result.current.errorType).toBe("auth");
+
+    await act(async () => {
+      await result.current.execute(async () => {
+        throw new Error("Forbidden (403)");
+      });
+    });
+    expect(result.current.errorType).toBe("auth");
+  });
+
+  it("categorizes 404 as notFound error", async () => {
+    const { result } = renderHook(() => useAsyncError());
+
+    await act(async () => {
+      await result.current.execute(async () => {
+        throw new Error("Resource 404 not found");
+      });
+    });
+    expect(result.current.errorType).toBe("notFound");
+  });
+
+  it("returns unknown for errors without specific keywords", async () => {
+    const { result } = renderHook(() => useAsyncError());
+
+    await act(async () => {
+      await result.current.execute(async () => {
+        throw new Error("Something completely different happened");
+      });
+    });
+    expect(result.current.errorType).toBe("unknown");
+  });
+
+  it("handles non-Error objects gracefully", async () => {
+    const { result } = renderHook(() => useAsyncError());
+
+    await act(async () => {
+      // Throwing a plain string instead of an Error object
+      await result.current.execute(async () => {
+        throw "Critical system failure";
+      });
+    });
+
+    expect(result.current.error).toBeInstanceOf(Error);
+    expect(result.current.error?.message).toBe("Critical system failure");
+    expect(result.current.errorType).toBe("unknown");
+  });
 });

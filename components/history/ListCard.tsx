@@ -10,6 +10,7 @@ import { StyleSheet, TouchableOpacity, View } from "react-native";
 // ── List Card ──
 const ListCard = ({ item, handleDelete }: ListCardItem) => (
   <TouchableOpacity
+    testID="list-card"
     style={styles.listCard}
     activeOpacity={0.88}
     onLongPress={() => handleDelete(item.id)}

@@ -52,7 +52,12 @@ function Step2Visual() {
           <View
             style={[step2Styles.vibeCard, isRTL ? { left: 12 } : { right: 12 }]}
           >
-            <BlurView intensity={40} tint="dark" style={step2Styles.vibeBlur}>
+            <BlurView
+              intensity={40}
+              tint="dark"
+              style={step2Styles.vibeBlur}
+              testID="step2-blur"
+            >
               <AppText style={step2Styles.vibeLabel}>
                 {t("onboarding.analysisComplete")}
               </AppText>

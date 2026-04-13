@@ -1,0 +1,19 @@
+// Jest Snapshot v1, https://goo.gl/fbAQLP
+
+exports[`LoaderDot matches snapshot 1`] = `
+<View
+  style={
+    [
+      {
+        "backgroundColor": "#f2ca50",
+        "borderRadius": 4,
+        "height": 8,
+        "width": 8,
+      },
+      {
+        "opacity": 0.3,
+      },
+    ]
+  }
+/>
+`;
