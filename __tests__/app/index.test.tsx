@@ -1,10 +1,10 @@
-import AsyncStorage from "@react-native-async-storage/async-storage";
+import IndexScreen from "@/app/index";
+import { Storage } from "@/utils/storage";
 import { fireEvent, render, waitFor } from "@testing-library/react-native";
 import React from "react";
-import IndexScreen from "../../app/index";
 
 // Mock SplashAnimation to test its onFinish
-jest.mock("../../components/common/SplashAnimation", () => {
+jest.mock("@/components/common/SplashAnimation", () => {
   const { View, Button } = require("react-native");
   return function MockSplash({ onFinish }: any) {
     return (
@@ -24,6 +24,12 @@ jest.mock("expo-router", () => ({
   },
 }));
 
+jest.mock("@/utils/storage", () => ({
+  Storage: {
+    getString: jest.fn(),
+  },
+}));
+
 describe("Index Screen", () => {
   beforeEach(() => {
     jest.clearAllMocks();
@@ -35,7 +41,7 @@ describe("Index Screen", () => {
   });
 
   it("redirects to /home if onboarding is completed", async () => {
-    (AsyncStorage.getItem as jest.Mock).mockResolvedValueOnce("true");
+    (Storage.getString as jest.Mock).mockReturnValueOnce("true");
 
     const { getByTestId, queryByTestId, getByText } = render(<IndexScreen />);
 
@@ -43,9 +49,7 @@ describe("Index Screen", () => {
     fireEvent.press(getByTestId("finish-splash"));
 
     await waitFor(() => {
-      expect(AsyncStorage.getItem).toHaveBeenCalledWith(
-        "hasCompletedOnboarding",
-      );
+      expect(Storage.getString).toHaveBeenCalledWith("hasCompletedOnboarding");
     });
 
     // Expect redirect
@@ -57,7 +61,18 @@ describe("Index Screen", () => {
   });
 
   it("redirects to /onboarding if onboarding is not completed", async () => {
-    (AsyncStorage.getItem as jest.Mock).mockResolvedValueOnce("false");
+    (Storage.getString as jest.Mock).mockReturnValueOnce("false");
+
+    const { getByTestId, getByText } = render(<IndexScreen />);
+
+    fireEvent.press(getByTestId("finish-splash"));
+
+    await waitFor(() => {
+      expect(getByText("/onboarding")).toBeTruthy();
+    });
+  });
+  it("handles null/undefined storage values as not onboarded", async () => {
+    (Storage.getString as jest.Mock).mockReturnValue(undefined);
 
     const { getByTestId, getByText } = render(<IndexScreen />);
 

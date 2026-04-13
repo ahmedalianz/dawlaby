@@ -19,7 +19,7 @@ import { changeLanguage } from "@/utils/i18n";
 import { loadPreferences, savePreferences } from "@/utils/preferences";
 import { loadProfile, saveProfile } from "@/utils/profile";
 import { Ionicons } from "@expo/vector-icons";
-import AsyncStorage from "@react-native-async-storage/async-storage";
+import { Storage } from "@/utils/storage";
 import { ImageManipulator, SaveFormat } from "expo-image-manipulator";
 import * as ImagePicker from "expo-image-picker";
 import { LinearGradient } from "expo-linear-gradient";
@@ -410,7 +410,8 @@ export default function ProfileScreen() {
                   text: "Reset",
                   style: "destructive",
                   onPress: async () => {
-                    await AsyncStorage.multiRemove([PROFILE_KEY, PREFS_KEY]);
+                    Storage.remove(PROFILE_KEY);
+                    Storage.remove(PREFS_KEY);
                     setProfile(DEFAULT_PROFILE);
                     setPreferences(DEFAULT_PREFS);
                     setNameInput("");

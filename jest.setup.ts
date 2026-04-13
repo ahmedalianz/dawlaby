@@ -191,3 +191,20 @@ jest.mock("@expo/vector-icons", () => ({
   Ionicons: "Ionicons",
   MaterialIcons: "MaterialIcons",
 }));
+const mockStorage = new Map();
+
+jest.mock("react-native-mmkv", () => {
+  return {
+    createMMKV: jest.fn(() => ({
+      set: jest.fn((key, value) => {
+        mockStorage.set(key, value);
+      }),
+      getString: jest.fn((key) => mockStorage.get(key)),
+      getNumber: jest.fn((key) => mockStorage.get(key)),
+      getBoolean: jest.fn((key) => mockStorage.get(key)),
+      contains: jest.fn((key) => mockStorage.has(key)),
+      remove: jest.fn((key) => mockStorage.delete(key)),
+      clearAll: jest.fn(() => mockStorage.clear()),
+    })),
+  };
+});
