@@ -1,5 +1,5 @@
 import { changeLanguage, initI18n } from "@/utils/i18n";
-import AsyncStorage from "@react-native-async-storage/async-storage";
+import { Storage } from "@/utils/storage";
 import * as Localization from "expo-localization";
 import i18next from "i18next";
 import { I18nManager } from "react-native";
@@ -12,7 +12,13 @@ jest.mock("react-native", () => {
   RN.I18nManager.forceRTL = jest.fn();
   return RN;
 });
-
+jest.mock("@/utils/storage", () => ({
+  Storage: {
+    getString: jest.fn(),
+    set: jest.fn(),
+    getObject: jest.fn(),
+  },
+}));
 // 2. Un-mock i18next for this file specifically
 // so we can test actual language transitions
 jest.unmock("i18next");
@@ -33,7 +39,7 @@ describe("Internationalization (i18n)", () => {
       (Localization.getLocales as jest.Mock).mockReturnValue([
         { languageCode: "ar" },
       ]);
-      (AsyncStorage.getItem as jest.Mock).mockResolvedValue(null);
+      (Storage.getObject as jest.Mock).mockReturnValue(null);
 
       await initI18n();
 
@@ -45,7 +51,7 @@ describe("Internationalization (i18n)", () => {
       (Localization.getLocales as jest.Mock).mockReturnValue([
         { languageCode: "ar" },
       ]);
-      (AsyncStorage.getItem as jest.Mock).mockResolvedValue("en");
+      (Storage.getString as jest.Mock).mockReturnValue("en");
 
       await initI18n();
 
@@ -60,7 +66,7 @@ describe("Internationalization (i18n)", () => {
 
       const result = await changeLanguage("ar");
 
-      expect(AsyncStorage.setItem).toHaveBeenCalledWith("app_language", "ar");
+      expect(Storage.set).toHaveBeenCalledWith("app_language", "ar");
       expect(i18next.language).toBe("ar");
       // Result is true because I18nManager.isRTL was false and we changed to 'ar'
       expect(result).toBe(true);
@@ -69,7 +75,7 @@ describe("Internationalization (i18n)", () => {
     it("should return false for unsupported languages", async () => {
       const result = await changeLanguage("fr");
       expect(result).toBe(false);
-      expect(AsyncStorage.setItem).not.toHaveBeenCalled();
+      expect(Storage.set).not.toHaveBeenCalled();
     });
 
     it("should return false if language changed but RTL state remains the same", async () => {

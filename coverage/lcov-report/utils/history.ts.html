@@ -23,9 +23,9 @@
         <div class='clearfix'>
             
             <div class='fl pad1y space-right2'>
-                <span class="strong">86.2% </span>
+                <span class="strong">85.71% </span>
                 <span class="quiet">Statements</span>
-                <span class='fraction'>25/29</span>
+                <span class='fraction'>24/28</span>
             </div>
         
             
@@ -44,9 +44,9 @@
         
             
             <div class='fl pad1y space-right2'>
-                <span class="strong">88.88% </span>
+                <span class="strong">88.46% </span>
                 <span class="quiet">Lines</span>
-                <span class='fraction'>24/27</span>
+                <span class='fraction'>23/26</span>
             </div>
         
             
@@ -120,43 +120,37 @@
 <a name='L55'></a><a href='#L55'>55</a>
 <a name='L56'></a><a href='#L56'>56</a>
 <a name='L57'></a><a href='#L57'>57</a>
-<a name='L58'></a><a href='#L58'>58</a>
-<a name='L59'></a><a href='#L59'>59</a>
-<a name='L60'></a><a href='#L60'>60</a>
-<a name='L61'></a><a href='#L61'>61</a></td><td class="line-coverage quiet"><span class="cline-any cline-neutral">&nbsp;</span>
+<a name='L58'></a><a href='#L58'>58</a></td><td class="line-coverage quiet"><span class="cline-any cline-neutral">&nbsp;</span>
 <span class="cline-any cline-neutral">&nbsp;</span>
 <span class="cline-any cline-neutral">&nbsp;</span>
 <span class="cline-any cline-neutral">&nbsp;</span>
 <span class="cline-any cline-neutral">&nbsp;</span>
 <span class="cline-any cline-neutral">&nbsp;</span>
 <span class="cline-any cline-yes">4x</span>
-<span class="cline-any cline-yes">5x</span>
-<span class="cline-any cline-yes">5x</span>
-<span class="cline-any cline-yes">5x</span>
+<span class="cline-any cline-yes">10x</span>
+<span class="cline-any cline-yes">10x</span>
+<span class="cline-any cline-yes">10x</span>
 <span class="cline-any cline-neutral">&nbsp;</span>
 <span class="cline-any cline-neutral">&nbsp;</span>
 <span class="cline-any cline-neutral">&nbsp;</span>
 <span class="cline-any cline-neutral">&nbsp;</span>
-<span class="cline-any cline-yes">5x</span>
-<span class="cline-any cline-yes">5x</span>
-<span class="cline-any cline-yes">5x</span>
+<span class="cline-any cline-yes">10x</span>
+<span class="cline-any cline-yes">10x</span>
+<span class="cline-any cline-yes">10x</span>
 <span class="cline-any cline-neutral">&nbsp;</span>
 <span class="cline-any cline-no">&nbsp;</span>
 <span class="cline-any cline-neutral">&nbsp;</span>
 <span class="cline-any cline-neutral">&nbsp;</span>
 <span class="cline-any cline-neutral">&nbsp;</span>
 <span class="cline-any cline-yes">4x</span>
-<span class="cline-any cline-yes">9x</span>
-<span class="cline-any cline-yes">9x</span>
-<span class="cline-any cline-yes">9x</span>
+<span class="cline-any cline-yes">15x</span>
+<span class="cline-any cline-yes">15x</span>
 <span class="cline-any cline-neutral">&nbsp;</span>
 <span class="cline-any cline-no">&nbsp;</span>
 <span class="cline-any cline-neutral">&nbsp;</span>
 <span class="cline-any cline-neutral">&nbsp;</span>
 <span class="cline-any cline-neutral">&nbsp;</span>
 <span class="cline-any cline-yes">4x</span>
-<span class="cline-any cline-neutral">&nbsp;</span>
-<span class="cline-any cline-neutral">&nbsp;</span>
 <span class="cline-any cline-yes">1x</span>
 <span class="cline-any cline-yes">1x</span>
 <span class="cline-any cline-yes">1x</span>
@@ -186,52 +180,49 @@
 <span class="cline-any cline-neutral">&nbsp;</span></td><td class="text"><pre class="prettyprint lang-js">import { MAX_HISTORY_ITEMS } from "@/constants/common";
 import { HISTORY_KEY } from "@/constants/user";
 import { HistoryItem } from "@/types";
-import AsyncStorage from "@react-native-async-storage/async-storage";
 import i18next from "i18next";
+import { Storage } from "./storage";
 &nbsp;
-export const saveToHistory = async (item: Omit&lt;HistoryItem, "id" | "date"&gt;) =&gt; {
+export const saveToHistory = (item: Omit&lt;HistoryItem, "id" | "date"&gt;) =&gt; {
   try {
-    const existing = await getHistory();
+    const existing = getHistory();
     const newItem: HistoryItem = {
       ...item,
       id: `look_${Date.now()}`,
       date: new Date().toISOString(),
     };
     const updated = [newItem, ...existing].slice(0, MAX_HISTORY_ITEMS);
-    await AsyncStorage.setItem(HISTORY_KEY, JSON.stringify(updated));
+    Storage.setObject(HISTORY_KEY, updated);
     return newItem;
   } catch (e) {
 <span class="cstat-no" title="statement not covered" >    console.error("Failed to save history", e);</span>
   }
 };
 &nbsp;
-export const getHistory = async (): Promise&lt;HistoryItem[]&gt; =&gt; {
+export const getHistory = (): HistoryItem[] =&gt; {
   try {
-    const raw = await AsyncStorage.getItem(HISTORY_KEY);
-    return raw ? JSON.parse(raw) : [];
+    return Storage.getObject&lt;HistoryItem[]&gt;(HISTORY_KEY) ?? [];
   } catch {
 <span class="cstat-no" title="statement not covered" >    return [];</span>
   }
 };
 // ── Get one by id ──
-export const getHistoryItem = async (
-  id: string,
-): Promise&lt;HistoryItem | null&gt; =&gt; {
+export const getHistoryItem = (id: string): HistoryItem | null =&gt; {
   try {
-    const history = await getHistory();
+    const history = getHistory();
     return history.find(<span class="fstat-no" title="function not covered" >(i</span>tem) =&gt; <span class="cstat-no" title="statement not covered" >item.id === id)</span> ?? null;
   } catch {
 <span class="cstat-no" title="statement not covered" >    return null;</span>
   }
 };
-export const deleteHistoryItem = async (id: string) =&gt; {
-  const existing = await getHistory();
+export const deleteHistoryItem = (id: string) =&gt; {
+  const existing = getHistory();
   const updated = existing.filter((i) =&gt; i.id !== id);
-  await AsyncStorage.setItem(HISTORY_KEY, JSON.stringify(updated));
+  Storage.setObject(HISTORY_KEY, updated);
 };
 &nbsp;
-export const clearHistory = async () =&gt; {
-  await AsyncStorage.removeItem(HISTORY_KEY);
+export const clearHistory = () =&gt; {
+  Storage.remove(HISTORY_KEY);
 };
 export const formatDate = (iso: string) =&gt; {
   const locale = i18next.language === "ar" ? <span class="branch-0 cbranch-no" title="branch not covered" >"ar-EG" </span>: "en-US";
@@ -250,7 +241,7 @@ export const formatDate = (iso: string) =&gt; {
             <div class='footer quiet pad2 space-top1 center small'>
                 Code coverage generated by
                 <a href="https://istanbul.js.org/" target="_blank" rel="noopener noreferrer">istanbul</a>
-                at 2026-04-13T15:27:21.047Z
+                at 2026-04-13T19:58:42.968Z
             </div>
         <script src="../prettify.js"></script>
         <script>

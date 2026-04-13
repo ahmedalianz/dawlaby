@@ -1,7 +1,14 @@
 import { DEFAULT_PREFS, PREFS_KEY } from "@/constants/user";
 import { Preferences } from "@/types";
 import { loadPreferences, savePreferences } from "@/utils/preferences";
-import AsyncStorage from "@react-native-async-storage/async-storage";
+import { Storage } from "@/utils/storage";
+
+jest.mock("@/utils/storage", () => ({
+  Storage: {
+    getString: jest.fn(),
+    setObject: jest.fn(),
+  },
+}));
 
 describe("Preferences Storage", () => {
   beforeEach(() => {
@@ -9,51 +16,53 @@ describe("Preferences Storage", () => {
   });
 
   describe("loadPreferences", () => {
-    it("should return DEFAULT_PREFS if storage is empty", async () => {
-      (AsyncStorage.getItem as jest.Mock).mockResolvedValue(null);
+    it("should return DEFAULT_PREFS if storage is empty", () => {
+      (Storage.getString as jest.Mock).mockReturnValue(null);
 
-      const result = await loadPreferences();
+      const result = loadPreferences();
 
-      expect(AsyncStorage.getItem).toHaveBeenCalledWith(PREFS_KEY);
+      expect(Storage.getString).toHaveBeenCalledWith(PREFS_KEY);
       expect(result).toEqual(DEFAULT_PREFS);
     });
 
-    it("should return merged preferences if storage has existing data", async () => {
+    it("should return merged preferences if storage has existing data", () => {
       const storedData = { theme: "dark" };
-      (AsyncStorage.getItem as jest.Mock).mockResolvedValue(
+      (Storage.getString as jest.Mock).mockReturnValue(
         JSON.stringify(storedData),
       );
 
-      const result = await loadPreferences();
+      const result = loadPreferences();
 
-      expect(AsyncStorage.getItem).toHaveBeenCalledWith(PREFS_KEY);
+      expect(Storage.getString).toHaveBeenCalledWith(PREFS_KEY);
       expect(result).toEqual({ ...DEFAULT_PREFS, ...storedData });
     });
 
-    it("should return DEFAULT_PREFS if AsyncStorage throws an error", async () => {
-      (AsyncStorage.getItem as jest.Mock).mockRejectedValue(
-        new Error("Some error"),
-      );
+    it("should return DEFAULT_PREFS if Storage throws an error", () => {
+      // MMKV getString is synchronous, so use mockImplementation to throw
+      (Storage.getString as jest.Mock).mockImplementation(() => {
+        throw new Error("Disk error");
+      });
 
-      const result = await loadPreferences();
+      const result = loadPreferences();
 
       expect(result).toEqual(DEFAULT_PREFS);
     });
   });
 
   describe("savePreferences", () => {
-    it("should stringify and save preferences to storage", async () => {
+    it("should save preferences object via Storage.setObject", () => {
       const mockPrefs: Preferences = {
         ...DEFAULT_PREFS,
-      };
+        // Adding a specific change to ensure it's passed correctly
+        notifications: false,
+      } as any;
 
-      await savePreferences(mockPrefs);
+      savePreferences(mockPrefs);
 
-      expect(AsyncStorage.setItem).toHaveBeenCalledTimes(1);
-      expect(AsyncStorage.setItem).toHaveBeenCalledWith(
-        PREFS_KEY,
-        JSON.stringify(mockPrefs),
-      );
+      expect(Storage.setObject).toHaveBeenCalledTimes(1);
+      // Logic Check: Your implementation calls Storage.setObject(PREFS_KEY, p).
+      // Since your Storage helper handles stringification, we pass the raw object here.
+      expect(Storage.setObject).toHaveBeenCalledWith(PREFS_KEY, mockPrefs);
     });
   });
 });

@@ -1,6 +1,6 @@
 import SplashAnimation from "@/components/common/SplashAnimation";
 import { Colors } from "@/constants/colors";
-import AsyncStorage from "@react-native-async-storage/async-storage";
+import { Storage } from "@/utils/storage";
 import { Redirect } from "expo-router";
 import { useEffect, useState } from "react";
 import { View } from "react-native";
@@ -13,17 +13,13 @@ export default function IndexScreen() {
   useEffect(() => {
     if (!isSplashFinished) return;
 
-    const checkOnboarding = async () => {
-      try {
-        const value = await AsyncStorage.getItem("hasCompletedOnboarding");
-        setHasOnboarded(value === "true");
-      } catch (e) {
-        console.error("Failed to read onboarding status", e);
-        setHasOnboarded(false);
-      }
-    };
-
-    checkOnboarding();
+    try {
+      const value = Storage.getString("hasCompletedOnboarding");
+      setHasOnboarded(value === "true");
+    } catch (e) {
+      console.error("Failed to read onboarding status", e);
+      setHasOnboarded(false);
+    }
   }, [isSplashFinished]);
 
   // While splash is playing → show only splash

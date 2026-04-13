@@ -1,4 +1,3 @@
-import AsyncStorage from "@react-native-async-storage/async-storage";
 import * as Localization from "expo-localization";
 import i18next, { InitOptions } from "i18next";
 import { initReactI18next } from "react-i18next";
@@ -6,8 +5,9 @@ import { I18nManager } from "react-native";
 
 import ar from "../locales/ar.json";
 import en from "../locales/en.json";
+import { Storage } from "./storage";
 
-const ASYNC_STORAGE_LANG_KEY = "app_language";
+const LANG_KEY = "app_language";
 
 const SUPPORTED_LANGS = ["en", "ar"];
 
@@ -25,7 +25,7 @@ export const initI18n = async () => {
   let savedLang = getDeviceLang();
 
   try {
-    const lang = await AsyncStorage.getItem(ASYNC_STORAGE_LANG_KEY);
+    const lang = Storage.getString(LANG_KEY);
     if (lang && SUPPORTED_LANGS.includes(lang)) {
       savedLang = lang;
     }
@@ -58,7 +58,7 @@ export const changeLanguage = async (lang: string) => {
   if (!SUPPORTED_LANGS.includes(lang)) return false;
 
   try {
-    await AsyncStorage.setItem(ASYNC_STORAGE_LANG_KEY, lang);
+    Storage.set(LANG_KEY, lang);
     await i18next.changeLanguage(lang);
 
     const isRTL = lang === "ar";
