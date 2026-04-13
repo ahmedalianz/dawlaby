@@ -4,10 +4,17 @@ import React from "react";
 import { StyleSheet } from "react-native";
 import { useSafeAreaInsets } from "react-native-safe-area-context";
 
-const BottomView = ({ children }: { children: React.ReactNode }) => {
+const BottomView = ({
+  children,
+  testID,
+}: {
+  children: React.ReactNode;
+  testID?: string;
+}) => {
   const insets = useSafeAreaInsets();
   return (
     <BlurView
+      testID={testID}
       intensity={60}
       tint="dark"
       style={[styles.bottomBar, { paddingBottom: insets.bottom + 20 }]}

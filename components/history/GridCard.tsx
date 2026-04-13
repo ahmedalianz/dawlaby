@@ -14,6 +14,7 @@ const GridCard = ({ item, index, handleDelete }: GridCardItem) => {
   const isOdd = index % 2 !== 0;
   return (
     <TouchableOpacity
+      testID="grid-card"
       style={[styles.gridCard, isOdd && { marginTop: 24 }]}
       activeOpacity={0.88}
       onLongPress={() => handleDelete(item.id)}

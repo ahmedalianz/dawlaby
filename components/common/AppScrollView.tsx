@@ -17,10 +17,12 @@ const AppScrollView = ({
   style,
   fullScreen,
   contentContainerStyle,
+  testID,
   ...props
 }: AppScrollViewProps) => {
   return (
     <Animated.ScrollView
+      testID={testID}
       showsVerticalScrollIndicator={false}
       contentContainerStyle={[
         styles.content,

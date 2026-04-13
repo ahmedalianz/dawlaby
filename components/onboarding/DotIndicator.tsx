@@ -14,6 +14,7 @@ const DotIndicator: React.FC<
         return (
           <Animated.View
             key={i}
+            testID={`dot-${i}`}
             style={[dot.base, isActive ? dot.active : dot.inactive]}
           />
         );

@@ -6,9 +6,11 @@ import { Colors } from "../../constants/colors";
 const RtlArrow = ({
   size = 22,
   reversed,
+  testID,
 }: {
   size?: number;
   reversed?: boolean;
+  testID?: string;
 }) => {
   const { isRTL } = useDirection();
   const arrowName = isRTL ? "arrow-forward" : "arrow-back";
@@ -18,6 +20,7 @@ const RtlArrow = ({
       name={reversed ? arrowNameReversed : arrowName}
       size={size}
       color={Colors.onSurface}
+      testID={testID}
     />
   );
 };

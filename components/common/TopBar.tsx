@@ -20,13 +20,12 @@ const TopBar = ({
   const { t } = useTranslation();
 
   return (
-    <BlurView
-      intensity={60}
-      tint="dark"
-      // style={[styles.topBar, { paddingTop: insets.top + 16 }]}
-      style={styles.topBar}
-    >
-      <TouchableOpacity style={styles.iconBtn} onPress={() => router.back()}>
+    <BlurView intensity={60} tint="dark" style={styles.topBar}>
+      <TouchableOpacity
+        testID="back-btn"
+        style={styles.iconBtn}
+        onPress={() => router.back()}
+      >
         <RtlArrow />
       </TouchableOpacity>
 
@@ -37,7 +36,11 @@ const TopBar = ({
           <View style={{ width: 40 }} />
         )}
         {firstButtonIcon && (
-          <TouchableOpacity style={styles.iconBtn} onPress={onFirstButtonPress}>
+          <TouchableOpacity
+            testID="first-btn"
+            style={styles.iconBtn}
+            onPress={onFirstButtonPress}
+          >
             <Ionicons
               name={firstButtonIcon}
               size={22}
@@ -47,6 +50,7 @@ const TopBar = ({
         )}
         {secondButtonIcon && (
           <TouchableOpacity
+            testID="second-btn"
             style={styles.iconBtn}
             onPress={onSecondButtonPress}
           >

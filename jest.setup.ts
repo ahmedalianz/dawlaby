@@ -21,17 +21,30 @@ jest.mock("react-native-safe-area-context", () => {
   return {
     SafeAreaProvider: ({ children }: { children: React.ReactNode }) => children,
     SafeAreaView: ({ children }: { children: React.ReactNode }) => children,
-    useSafeAreaInsets: () => inset,
+    useSafeAreaInsets: jest.fn(() => inset),
     useSafeAreaFrame: () => ({ x: 0, y: 0, width: 390, height: 844 }),
   };
 });
 // ── Mock expo-file-system ──
+const mockAudioRecorder = {
+  record: jest.fn(),
+  stop: jest.fn().mockResolvedValue(undefined),
+  prepareToRecordAsync: jest.fn().mockResolvedValue(undefined),
+  isRecording: false,
+  uri: "mock/audio.m4a",
+};
 jest.mock("expo-file-system", () => ({
   File: jest.fn().mockImplementation(() => ({
     base64: jest.fn().mockResolvedValue("mockbase64string"),
   })),
   readAsStringAsync: jest.fn().mockResolvedValue("mockbase64string"),
   EncodingType: { Base64: "base64" },
+  useAudioRecorder: jest.fn(() => mockAudioRecorder),
+  AudioModule: {
+    requestRecordingPermissionsAsync: jest
+      .fn()
+      .mockResolvedValue({ granted: true }),
+  },
 }));
 jest.mock("expo-constants", () => ({
   default: {},
@@ -172,26 +185,6 @@ jest.mock("i18next", () => ({
 }));
 // ── Mock fetch globally ──
 global.fetch = jest.fn();
-
-// Mock your common UI components to be "transparent" to tests
-jest.mock(
-  "@/components/common/Screen",
-  () =>
-    ({ children }: { children: React.ReactNode }) =>
-      children,
-);
-jest.mock(
-  "@/components/common/BottomView",
-  () =>
-    ({ children }: { children: React.ReactNode }) =>
-      children,
-);
-jest.mock(
-  "@/components/common/AppScrollView",
-  () =>
-    ({ children }: { children: React.ReactNode }) =>
-      children,
-);
 
 // Mock Ionicons
 jest.mock("@expo/vector-icons", () => ({

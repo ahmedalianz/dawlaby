@@ -11,11 +11,19 @@ const SectionHeader: React.FC<Readonly<SectionHeaderProps>> = ({
 }) => {
   return (
     <View style={styles.sectionHeader}>
-      <Ionicons name={icon} size={15} color={color ?? Colors.primary} />
-      <AppText style={[styles.sectionTitle, color ? { color } : undefined]}>
+      <Ionicons
+        testID="section-header-icon"
+        name={icon}
+        size={15}
+        color={color ?? Colors.primary}
+      />
+      <AppText
+        testID="section-header-title"
+        style={[styles.sectionTitle, color ? { color } : undefined]}
+      >
         {title}
       </AppText>
-      <View style={styles.sectionDivider} />
+      <View testID="section-header-divider" style={styles.sectionDivider} />
     </View>
   );
 };

@@ -12,6 +12,7 @@ const ProcessingStep: React.FC<Readonly<ProcessingStepProps>> = ({
   return (
     <View style={styles.stepRow}>
       <Ionicons
+        testID="processing-step-icon"
         name={done ? "checkmark-circle" : "ellipse-outline"}
         size={16}
         color={
