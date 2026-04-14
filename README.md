@@ -5,6 +5,10 @@
 <h1 align="center">DAWLABY</h1>
 
 <p align="center">
+  <img src="./screenshots/1.jpeg" width="400" alt="Dawlaby Hero" />
+</p>
+
+<p align="center">
   <strong>Your AI-Powered Personal Fashion Stylist</strong>
 </p>
 
@@ -76,6 +80,18 @@
 
 ---
 
+## 📱 Screenshots
+
+|                   Onboarding                   |                 Smart Analysis                 |                Voice Assistant                 |
+| :--------------------------------------------: | :--------------------------------------------: | :--------------------------------------------: |
+| <img src="./screenshots/3.jpeg" width="200" /> | <img src="./screenshots/2.jpeg" width="200" /> | <img src="./screenshots/3.jpeg" width="200" /> |
+
+|                  Look History                  |               Profile (English)                |             Profile (Arabic - RTL)             |
+| :--------------------------------------------: | :--------------------------------------------: | :--------------------------------------------: |
+| <img src="./screenshots/1.jpeg" width="200" /> | <img src="./screenshots/2.jpeg" width="200" /> | <img src="./screenshots/3.jpeg" width="200" /> |
+
+---
+
 ## 🛠️ Tech Stack
 
 | Layer                    | Technology                                               |
@@ -92,15 +108,15 @@
 | **Audio**                | expo-audio (voice recording & transcription)             |
 | **Styling**              | expo-blur, expo-linear-gradient, expo-haptics            |
 | **Testing**              | Jest + @testing-library/react-native                     |
-| **Build**                | EAS Build (development, preview, production profiles)   
-| **Animations** | React Native Reanimated 4 |
-| **Storage** | react-native-mmkv (synchronous key-value) |
-| **Internationalization** | i18next + react-i18next + expo-localization |
-| **Camera** | expo-camera + expo-image-picker + expo-image-manipulator |
-| **Audio** | expo-audio (voice recording & transcription) |
-| **Styling** | expo-blur, expo-linear-gradient, expo-haptics |
-| **Testing** | Jest + @testing-library/react-native |
-| **Build** | EAS Build (development, preview, production profiles) |
+| **Build**                | EAS Build (development, preview, production profiles)    |
+| **Animations**           | React Native Reanimated 4                                |
+| **Storage**              | react-native-mmkv (synchronous key-value)                |
+| **Internationalization** | i18next + react-i18next + expo-localization              |
+| **Camera**               | expo-camera + expo-image-picker + expo-image-manipulator |
+| **Audio**                | expo-audio (voice recording & transcription)             |
+| **Styling**              | expo-blur, expo-linear-gradient, expo-haptics            |
+| **Testing**              | Jest + @testing-library/react-native                     |
+| **Build**                | EAS Build (development, preview, production profiles)    |
 
 ---
 
