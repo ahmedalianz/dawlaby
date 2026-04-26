@@ -12,24 +12,14 @@ const ActionRow: React.FC<
     icon: string;
     onPress: () => void;
     danger?: boolean;
+    testID?: string;
   }>
-> = ({
-  label,
-  sublabel,
-  icon,
-  onPress,
-  danger = false,
-}: {
-  label: string;
-  sublabel: string;
-  icon: string;
-  onPress: () => void;
-  danger?: boolean;
-}) => {
+> = ({ label, sublabel, icon, onPress, danger = false, testID }) => {
   return (
     <TouchableOpacity
       style={styles.prefRow}
       onPress={onPress}
+      testID={testID}
       activeOpacity={0.7}
     >
       <View style={[styles.prefIconWrapper, danger && styles.prefIconDanger]}>

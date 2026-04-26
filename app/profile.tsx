@@ -14,19 +14,19 @@ import {
   PROFILE_KEY,
   STYLE_GOALS,
 } from "@/constants/user";
+import { useConfirm } from "@/store/ConfirmContext";
 import { Preferences, UserProfile } from "@/types";
 import { changeLanguage } from "@/utils/i18n";
 import { loadPreferences, savePreferences } from "@/utils/preferences";
 import { loadProfile, saveProfile } from "@/utils/profile";
-import { Ionicons } from "@expo/vector-icons";
 import { Storage } from "@/utils/storage";
+import { Ionicons } from "@expo/vector-icons";
 import { ImageManipulator, SaveFormat } from "expo-image-manipulator";
 import * as ImagePicker from "expo-image-picker";
 import { LinearGradient } from "expo-linear-gradient";
 import React, { useCallback, useEffect, useState } from "react";
 import { useTranslation } from "react-i18next";
 import {
-  Alert,
   Platform,
   ScrollView,
   Share,
@@ -46,6 +46,7 @@ import { clearHistory, getHistory } from "../utils/history";
 
 export default function ProfileScreen() {
   const { t, i18n } = useTranslation();
+  const confirm = useConfirm();
   const [profile, setProfile] = useState<UserProfile>(DEFAULT_PROFILE);
   const [preferences, setPreferences] = useState<Preferences>(DEFAULT_PREFS);
   const [stats, setStats] = useState({ looks: 0 });
@@ -62,12 +63,10 @@ export default function ProfileScreen() {
   const scaleStyle = useAnimatedStyle(() => ({
     transform: [{ scale: avatarScale.value }],
   }));
-  const init = useCallback(async () => {
-    const [profile, preferences, history] = await Promise.all([
-      loadProfile(),
-      loadPreferences(),
-      getHistory(),
-    ]);
+  const init = useCallback(() => {
+    const profile = loadProfile();
+    const preferences = loadPreferences();
+    const history = getHistory();
     setProfile(profile);
     setPreferences(preferences);
     setNameInput(profile.name);
@@ -85,16 +84,29 @@ export default function ProfileScreen() {
   }, [init]);
 
   // ── Update helpers ──
-  const updateProfile = async (updates: Partial<UserProfile>) => {
+  const updateProfile = (updates: Partial<UserProfile>) => {
     const updated = { ...profile, ...updates };
     setProfile(updated);
-    await saveProfile(updated);
+    saveProfile(updated);
   };
 
-  const updatePreferences = async (updates: Partial<Preferences>) => {
+  const updatePreferences = (updates: Partial<Preferences>) => {
     const updated = { ...preferences, ...updates };
     setPreferences(updated);
-    await savePreferences(updated);
+    savePreferences(updated);
+  };
+
+  const handleLanguagePress = async (lang: string) => {
+    if (i18n.language === lang) return;
+    const ok = await confirm({
+      icon: "language-outline",
+      title: t("profile.changeLanguage"),
+      subtitle: t("profile.changeLanguageSub"),
+      confirmLabel: t("confirm"),
+      cancelLabel: t("cancel"),
+      variant: "warning",
+    });
+    if (ok) await changeLanguage(lang);
   };
 
   // ── Pick Avatar ──
@@ -117,35 +129,55 @@ export default function ProfileScreen() {
         base64: false,
       });
 
-      await updateProfile({ avatarUri: compressedImage.uri });
+      updateProfile({ avatarUri: compressedImage.uri });
     }
   };
 
   // ── Save Name ──
-  const saveName = async () => {
+  const saveName = () => {
     setEditingName(false);
-    await updateProfile({ name: nameInput.trim() || "Your Name" });
+    updateProfile({ name: nameInput.trim() || "Dawlaby user" });
   };
 
   // ── Save Bio ──
-  const saveBio = async () => {
+  const saveBio = () => {
     setEditingBio(false);
-    await updateProfile({ bio: bioInput.trim() });
+    updateProfile({ bio: bioInput.trim() });
   };
 
   // ── Clear History ──
-  const handleClearHistory = () => {
-    Alert.alert(t("profile.clearHistory"), t("profile.clearHistorySub"), [
-      { text: t("profile.cancel"), style: "cancel" },
-      {
-        text: t("profile.clear"),
-        style: "destructive",
-        onPress: async () => {
-          await clearHistory();
-          setStats({ looks: 0 });
-        },
-      },
-    ]);
+  const handleClearHistory = async () => {
+    const ok = await confirm({
+      icon: "trash-outline",
+      title: t("profile.clearHistory"),
+      subtitle: t("profile.clearHistoryConfirm"),
+      confirmLabel: t("clear"),
+      cancelLabel: t("cancel"),
+      variant: "danger",
+    });
+    if (ok) {
+      clearHistory();
+      setStats({ looks: 0 });
+    }
+  };
+
+  const handleResetProfile = async () => {
+    const ok = await confirm({
+      icon: "person-remove-outline",
+      title: t("profile.resetProfile"),
+      subtitle: t("profile.resetProfileConfirm"),
+      confirmLabel: t("reset"),
+      cancelLabel: t("cancel"),
+      variant: "danger",
+    });
+    if (ok) {
+      Storage.remove(PROFILE_KEY);
+      Storage.remove(PREFS_KEY);
+      setProfile(DEFAULT_PROFILE);
+      setPreferences(DEFAULT_PREFS);
+      setNameInput("");
+      setBioInput("");
+    }
   };
 
   const handleShareApp = async () => {
@@ -168,7 +200,17 @@ export default function ProfileScreen() {
       }
     } catch (error: any) {
       console.error("Share error:", error);
-      Alert.alert(t("shareFailed"), t("shareFailedMsg"));
+      const ok = await confirm({
+        icon: "share-outline",
+        title: t("shareFailed"),
+        subtitle: t("shareFailedMsg"),
+        confirmLabel: t("confirm"),
+        cancelLabel: t("cancel"),
+        variant: "warning",
+      });
+      if (ok) {
+        handleShareApp();
+      }
     }
   };
 
@@ -224,6 +266,7 @@ export default function ProfileScreen() {
                 placeholder={t("profile.placeholderName")}
                 placeholderTextColor={Colors.secondary}
                 selectionColor={Colors.primary}
+                maxLength={20}
               />
               <TouchableOpacity onPress={saveName}>
                 <Ionicons
@@ -347,14 +390,10 @@ export default function ProfileScreen() {
                 lang === "en" ? t("profile.english") : t("profile.arabic");
               return (
                 <TouchableOpacity
+                  testID="app-language-change"
                   key={lang}
                   style={[styles.langBtn, active && styles.langBtnActive]}
-                  onPress={async () => {
-                    const reloadNeeded = await changeLanguage(lang);
-                    if (reloadNeeded) {
-                      Alert.alert(t("reloadRequired"), t("restartToApplyRTL"));
-                    }
-                  }}
+                  onPress={() => handleLanguagePress(lang)}
                 >
                   <AppText
                     style={[
@@ -373,6 +412,7 @@ export default function ProfileScreen() {
         {/* ── PREFERENCES ── */}
         <Section title={t("profile.preferences")} icon="settings-outline">
           <ToggleRow
+            testID="save-history"
             label={t("profile.saveHistory")}
             sublabel={t("profile.saveHistorySub")}
             icon="time-outline"
@@ -381,6 +421,7 @@ export default function ProfileScreen() {
           />
           <View style={styles.rowSeparator} />
           <ToggleRow
+            testID="save-notifications"
             label={t("profile.notifications")}
             sublabel={t("profile.notificationsSub")}
             icon="notifications-outline"
@@ -392,6 +433,7 @@ export default function ProfileScreen() {
         {/* ── DATA & PRIVACY ── */}
         <Section title={t("profile.privacy")} icon="shield-outline">
           <ActionRow
+            testID="clear-history"
             icon="trash-outline"
             label={t("profile.clearHistory")}
             sublabel={`${stats.looks} ${t("profile.looksStored")}`}
@@ -400,26 +442,11 @@ export default function ProfileScreen() {
           />
           <View style={styles.rowSeparator} />
           <ActionRow
+            testID="reset-profile"
             icon="person-remove-outline"
             label={t("profile.resetProfile")}
             sublabel={t("profile.resetProfileSub")}
-            onPress={() => {
-              Alert.alert(t("resetProfile"), t("resetProfileConfirm"), [
-                { text: "Cancel", style: "cancel" },
-                {
-                  text: "Reset",
-                  style: "destructive",
-                  onPress: async () => {
-                    Storage.remove(PROFILE_KEY);
-                    Storage.remove(PREFS_KEY);
-                    setProfile(DEFAULT_PROFILE);
-                    setPreferences(DEFAULT_PREFS);
-                    setNameInput("");
-                    setBioInput("");
-                  },
-                },
-              ]);
-            }}
+            onPress={handleResetProfile}
             danger
           />
         </Section>

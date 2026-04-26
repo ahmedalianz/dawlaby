@@ -6,10 +6,12 @@ import { Colors } from "../../constants/colors";
 const RtlArrow = ({
   size = 22,
   reversed,
+  color = Colors.onSurface,
   testID,
 }: {
   size?: number;
   reversed?: boolean;
+  color?: string;
   testID?: string;
 }) => {
   const { isRTL } = useDirection();
@@ -19,7 +21,7 @@ const RtlArrow = ({
     <Ionicons
       name={reversed ? arrowNameReversed : arrowName}
       size={size}
-      color={Colors.onSurface}
+      color={color}
       testID={testID}
     />
   );

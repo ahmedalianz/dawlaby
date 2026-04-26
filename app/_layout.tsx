@@ -1,6 +1,7 @@
 import { ErrorBoundary } from "@/components/common/ErrorBoundary";
 import { Colors } from "@/constants/colors";
 import { useSyncDirectionWithLang } from "@/hooks/useSyncDirectionWithLang";
+import { ConfirmProvider } from "@/store/ConfirmContext";
 import { DirectionProvider } from "@/store/DirectionContext";
 import { initI18n } from "@/utils/i18n";
 import {
@@ -32,7 +33,9 @@ export default function Layout() {
 
   return (
     <DirectionProvider>
-      <AppContent />
+      <ConfirmProvider>
+        <AppContent />
+      </ConfirmProvider>
     </DirectionProvider>
   );
 }
