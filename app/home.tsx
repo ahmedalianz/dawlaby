@@ -6,6 +6,7 @@ import FadeIn from "@/components/common/FadeIn";
 import PressScale from "@/components/common/PressScale";
 import Screen from "@/components/common/Screen";
 import { APP_NAME_LARGE } from "@/constants/app";
+import { Colors } from "@/constants/colors";
 import { DEFAULT_PROFILE } from "@/constants/user";
 import { HistoryItem, UserProfile } from "@/types";
 import { getHistory } from "@/utils/history";
@@ -13,26 +14,31 @@ import { loadProfile } from "@/utils/profile";
 import { MaterialIcons } from "@expo/vector-icons";
 import { BlurView } from "expo-blur";
 import { LinearGradient } from "expo-linear-gradient";
-import { router } from "expo-router";
-import React, { useCallback, useEffect, useState } from "react";
+import { router, useFocusEffect } from "expo-router";
+import React, { useCallback, useState } from "react";
 import { useTranslation } from "react-i18next";
 import { Image, StyleSheet, TouchableOpacity, View } from "react-native";
-import { Colors } from "../constants/colors";
 
 export default function Home() {
   const { t } = useTranslation();
   const [profile, setProfile] = useState<UserProfile>(DEFAULT_PROFILE);
   const [recentLooks, setRecentLooks] = useState<HistoryItem[]>([]);
 
-  const init = useCallback(async () => {
-    const [profile, history] = await Promise.all([loadProfile(), getHistory()]);
-    setProfile(profile);
-    setRecentLooks(history.slice(0, 2));
-  }, []);
+  useFocusEffect(
+    useCallback(() => {
+      const newProfile = loadProfile();
+      const history = getHistory();
+      setRecentLooks((prev) =>
+        JSON.stringify(prev) === JSON.stringify(history.slice(0, 2))
+          ? prev
+          : history.slice(0, 2),
+      );
+      setProfile((prev) =>
+        JSON.stringify(prev) === JSON.stringify(newProfile) ? prev : newProfile,
+      );
+    }, []),
+  );
 
-  useEffect(() => {
-    init();
-  }, [init]);
   return (
     <Screen>
       {/* Top App Bar */}
@@ -44,7 +50,7 @@ export default function Home() {
             source={
               profile.avatarUri
                 ? { uri: profile.avatarUri }
-                : require("../assets/images/avatar.webp")
+                : require("@/assets/images/avatar.webp")
             }
             style={styles.profilePic}
           />

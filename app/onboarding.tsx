@@ -1,5 +1,5 @@
+import AppButton from "@/components/common/AppButton";
 import AppText from "@/components/common/AppText";
-import RtlArrow from "@/components/common/RtlArrow";
 import Screen from "@/components/common/Screen";
 import DotIndicator from "@/components/onboarding/DotIndicator";
 import SlideItem from "@/components/onboarding/SlideItem";
@@ -10,7 +10,6 @@ import { APP_NAME_LARGE } from "@/constants/app";
 import { useDirection } from "@/store/DirectionContext";
 import { OnboardingStep } from "@/types";
 import { BlurView } from "expo-blur";
-import { LinearGradient } from "expo-linear-gradient";
 import { router } from "expo-router";
 import React, {
   useCallback,
@@ -150,19 +149,11 @@ export default function OnboardingScreen() {
         <DotIndicator count={steps.length} activeIndex={activeIndex} />
 
         <Animated.View style={btnStyle}>
-          <TouchableOpacity onPress={handleNext} activeOpacity={0.9}>
-            <LinearGradient
-              colors={[Colors.primary, Colors.primaryContainer]}
-              start={{ x: 0, y: 0 }}
-              end={{ x: 1, y: 1 }}
-              style={styles.nextBtn}
-            >
-              <AppText style={styles.nextBtnText}>
-                {isLast ? t("onboarding.getStarted") : t("onboarding.next")}
-              </AppText>
-              {!isLast && <RtlArrow size={16} reversed />}
-            </LinearGradient>
-          </TouchableOpacity>
+          <AppButton
+            hasArrow={!isLast}
+            onPress={handleNext}
+            text={isLast ? t("onboarding.getStarted") : t("onboarding.next")}
+          />
         </Animated.View>
       </BlurView>
     </Screen>
@@ -222,25 +213,5 @@ const styles = StyleSheet.create({
     paddingBottom: 44,
     borderTopWidth: 0,
     overflow: "hidden",
-  },
-  nextBtn: {
-    flexDirection: "row",
-    alignItems: "center",
-    gap: 8,
-    paddingHorizontal: 28,
-    paddingVertical: 14,
-    borderRadius: 14,
-    shadowColor: Colors.primary,
-    shadowOffset: { width: 0, height: 4 },
-    shadowOpacity: 0.3,
-    shadowRadius: 12,
-    elevation: 8,
-  },
-  nextBtnText: {
-    color: Colors.onPrimary,
-    fontSize: 12,
-    fontWeight: "800",
-    letterSpacing: 2,
-    textTransform: "uppercase",
   },
 });

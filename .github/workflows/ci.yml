@@ -47,7 +47,7 @@ jobs:
 
       # 7. Run Tests + Coverage
       - name: Run Tests (Changed Files Only)
-        run: npm test -- --ci --coverage --changedSince=origin/master --watchAll=false
+        run: npm test -- --ci --coverage --watchAll=false
 
       # Optional: Comment coverage report on PR
       - name: Jest Coverage Report

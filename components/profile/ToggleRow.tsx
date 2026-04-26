@@ -11,20 +11,9 @@ const ToggleRow: React.FC<
     icon: string;
     value: boolean;
     onToggle: (v: boolean) => void;
+    testID?: string;
   }>
-> = ({
-  label,
-  sublabel,
-  icon,
-  value,
-  onToggle,
-}: {
-  label: string;
-  sublabel: string;
-  icon: string;
-  value: boolean;
-  onToggle: (v: boolean) => void;
-}) => {
+> = ({ label, sublabel, icon, value, onToggle, testID }) => {
   return (
     <View style={styles.prefRow}>
       <View style={styles.prefIconWrapper}>
@@ -35,6 +24,7 @@ const ToggleRow: React.FC<
         <AppText style={styles.prefSublabel}>{sublabel}</AppText>
       </View>
       <Switch
+        testID={testID}
         value={value}
         onValueChange={onToggle}
         trackColor={{

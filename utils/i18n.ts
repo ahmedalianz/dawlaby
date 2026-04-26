@@ -1,4 +1,5 @@
 import * as Localization from "expo-localization";
+import * as Updates from "expo-updates";
 import i18next, { InitOptions } from "i18next";
 import { initReactI18next } from "react-i18next";
 import { I18nManager } from "react-native";
@@ -66,11 +67,23 @@ export const changeLanguage = async (lang: string) => {
     if (I18nManager.isRTL !== isRTL) {
       I18nManager.allowRTL(isRTL);
       I18nManager.forceRTL(isRTL);
-      return true; // trigger reload
+
+      // Wait for storage to save
+      await new Promise((resolve) => setTimeout(resolve, 500));
+
+      // Restart
+      await Updates.reloadAsync();
+      return true;
     }
 
     return false;
   } catch (e) {
+    // If not in production (dev mode) — reloadAsync fails
+    // In dev mode, just warn
+    if (__DEV__) {
+      console.warn("Restart required — reload manually in dev mode");
+      return true;
+    }
     console.error("Failed to change language", e);
     return false;
   }
