@@ -46,8 +46,8 @@ jobs:
         run: npx expo config --type introspect
 
       # 7. Run Tests + Coverage
-      - name: Run Tests (Changed Files Only)
-        run: npm test -- --ci --coverage --changedSince=origin/master --watchAll=false
+      - name: Run Tests
+        run: npm test -- --ci --coverage --changedSince=origin/master --watchAll=true
 
       # Optional: Comment coverage report on PR
       - name: Jest Coverage Report

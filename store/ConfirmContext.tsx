@@ -41,7 +41,8 @@ export const ConfirmProvider = ({
   const confirm = useCallback<ConfirmFn>((opts) => {
     setOptions(opts);
     setVisible(true);
-
+    //consider cancelling the promise if the component unmounts
+    //and consider cancelling the duplicated calls
     return new Promise<boolean>((resolve) => {
       resolveRef.current = resolve;
     });
