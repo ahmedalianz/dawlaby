@@ -1,7 +1,7 @@
 import Home from "@/app/home";
 import { getHistory } from "@/utils/history";
 import { loadProfile } from "@/utils/profile";
-import { fireEvent, render, waitFor } from "@testing-library/react-native";
+import { fireEvent, render } from "@testing-library/react-native";
 import { router } from "expo-router";
 import React from "react";
 
@@ -17,11 +17,11 @@ jest.mock("@/utils/history", () => ({
 describe("Home Screen", () => {
   beforeEach(() => {
     jest.clearAllMocks();
-    (loadProfile as jest.Mock).mockResolvedValue({
+    (loadProfile as jest.Mock).mockReturnValue({
       name: "Test User",
       avatarUri: "https://test.com/avatar.jpg",
     });
-    (getHistory as jest.Mock).mockResolvedValue([
+    (getHistory as jest.Mock).mockReturnValue([
       { id: "1", imageUri: "https://test.com/1.jpg", styleVibe: "Casual" },
       { id: "2", imageUri: "https://test.com/2.jpg", styleVibe: "Formal" },
     ]);
@@ -30,11 +30,8 @@ describe("Home Screen", () => {
   it("renders correctly and loads recent outfits", async () => {
     const { getByText } = render(<Home />);
 
-    // Wait for the async effect to resolve
-    await waitFor(() => {
-      expect(loadProfile).toHaveBeenCalled();
-      expect(getHistory).toHaveBeenCalled();
-    });
+    expect(loadProfile).toHaveBeenCalled();
+    expect(getHistory).toHaveBeenCalled();
 
     expect(getByText("home.welcomeBack")).toBeTruthy();
     expect(getByText("home.recentOutfits")).toBeTruthy();
@@ -46,7 +43,7 @@ describe("Home Screen", () => {
 
   it("navigates to secondary screens correctly", async () => {
     const { getByText } = render(<Home />);
-    await waitFor(() => expect(loadProfile).toHaveBeenCalled());
+    expect(loadProfile).toHaveBeenCalled();
 
     // Find and interact with "Upload Photo" functionality
     const uploadBtn = getByText("home.uploadPhoto");
